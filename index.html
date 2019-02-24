@@ -9,17 +9,22 @@
 </head>
 <body>
   <div id="map"></div>
-  <div id="info">
-    <!-- Display current year -->
-    <!-- Show list of interesting locations -->
+  <div id="info" class="box">
+    <h2><span id="series">1909</span></h2>
+    <!-- <ul>
+      <li><a href="#13/52.3719/4.9345">Rietlanden - Locomotievenloods</a></li>
+      <li><a href="#13/52.3625/4.8828">Huis van Bewaring I (Weteringschans)</a></li>
+      <li><a href="#13/52.3598/4.9088">Station Amsterdam Weesperpoort</a></li>
+      <li><a href="#12/52.3873/4.8454">Sloterdijk</a></li>
+    </ul> -->
   </div>
-  <div id="controls">
+  <div id="controls" class="box">
     <label for="slider"><img src="assets/opacity.svg" /></label>
     <input id="slider" type="range" min="1" max="100" step="1" value="100">
     <div id="animation-controls">
       <button id="previous"><img src="assets/previous.svg" /></button>
       <button id="play"><img src="assets/play.svg" /></button>
-      <button id="pause"><img src="assets/pause.svg" /></button>
+      <button id="pause" disabled><img src="assets/pause.svg" /></button>
       <button id="next"><img src="assets/next.svg" /></button>
       <button id="slower">🐢</button>
       <button id="faster">🚀</button>
@@ -45,6 +50,8 @@
 
     var subdomains = ['t1', 't2', 't3', 't4']
     var years = [1909, 1943, 1985]
+
+    // setBounds
 
     var amsterdamLayer = new L.tileLayer('https://{s}.data.amsterdam.nl/topo_rd/{z}/{x}/{y}.png', {
       maxZoom: 15,
@@ -82,7 +89,7 @@
     var map = new L.Map('map', {
       scrollWheelZoom: false,
       crs: RD,
-      layers: [publiekeWerkenLayers[0], publiekeWerkenLayers[1]]
+      layers: [publiekeWerkenLayers[1], publiekeWerkenLayers[0]]
     })
 
     var center = L.point(121854, 487080)
@@ -105,12 +112,12 @@
     document.getElementById('faster').addEventListener('click', faster)
 
     var minFps = 0.5
-    var maxFps = 2
+    var maxFps = 3
     var fpsMultiplier = 1.2
 
     var animation
-    var fps = minFps
-    var yearIndex = 2
+    var fps = 1.2
+    var yearIndex = 0
     var front = 0
 
     function slower () {
@@ -136,6 +143,9 @@
     }
 
     function pauseAnimation () {
+      document.getElementById('play').disabled = false
+      document.getElementById('pause').disabled = true
+
       if (animation) {
         window.clearInterval(animation)
         animation = undefined
@@ -175,22 +185,33 @@
     }
 
     function incrementLayer (increment) {
-      yearIndex += increment
+      yearIndex = (yearIndex + increment + years.length) % years.length
 
-      var year = years[yearIndex % years.length]
+      var year = years[yearIndex]
       var layer = publiekeWerkenLayers[front]
-
       layer.setUrl(makeTileUrl(year))
 
       front = (front + 1) % 2
 
-      publiekeWerkenLayers[front].bringToFront()
+      layer.bringToFront()
+      document.getElementById('series').innerHTML = years[yearIndex]
     }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === '[') {
+        previousMap()
+      } else if (event.key === ']') {
+        nextMap()
+      }
+    })
 
     function startAnimation () {
       if (animation) {
         return
       }
+
+      document.getElementById('play').disabled = true
+      document.getElementById('pause').disabled = false
 
       animation = setInterval(function () {
         incrementLayer(1)

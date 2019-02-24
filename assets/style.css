@@ -11,26 +11,47 @@ html, body {
 }
 
 .leaflet-container {
-  background: #eee5c9;
+  background: white;
+  /* background: #eee5c9; */
+}
+
+#info h2 {
+  margin-top: 0;
+}
+
+ul, ol {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.box {
+  position: absolute;
+  z-index: 9999;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 2px;
+  box-sizing: border-box;
+  padding: .5em;
+  background: white;
+}
+
+#info {
+  right: 10px;
+  top: 10px;
+}
+
+#info h2 {
+  margin: 0;
 }
 
 #controls {
-  border: 2px solid rgba(0,0,0,0.2);
-  border-radius: 4px;
   width: 30%;
-  box-sizing: border-box;
-
-  border: 2px solid rgba(0,0,0,0.2);
   background-clip: padding-box;
-  border-radius: 2px;
-
   left: calc(50% - 15%);
-  z-index: 9999;
-  position: absolute;
+
   bottom: 20px;
   margin: 0 auto;
   background-color: white;
-  padding: .5em;
   display: flex;
   align-items: center;
 }
@@ -75,8 +96,12 @@ label img,
   border-radius: 2px;
 }
 
-#animation-controls button:hover {
+#animation-controls button:hover:not(:disabled) {
   background-color: #ccc;
+}
+
+#animation-controls button:disabled {
+  opacity: 0.5;
 }
 
 #animation-controls {
